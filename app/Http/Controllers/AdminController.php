@@ -234,7 +234,7 @@ class AdminController extends Controller
         $file = $request->file('video');
         $nama_file = time() . "_" . $file->getClientOriginalName();
         $tujuan_upload = 'foto_vendor';
-        if ($stored = $file->storeAs($tujuan_upload, $nama_file)) {
+        if ($stored = $file->storePubliclyAs($tujuan_upload, $nama_file)) {
             $videoFilePath = $stored;
         } else {
             return redirect('/admin/vendor')->with(['status' => 2, 'msg' => 'Error Upload File Video']);
