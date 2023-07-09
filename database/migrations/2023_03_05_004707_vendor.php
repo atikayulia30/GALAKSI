@@ -25,6 +25,14 @@ class Vendor extends Migration
             $table->integer('hapus')->default(0);
             $table->string('created_at');
             $table->string('updated_at');
+            $table->string("username");
+            $table->string("password");
+            $table->integer("like");
+            $table->string("harga");
+            $table->integer("jenis_vendor")->default(1);
+            $table->string("facebook");
+            $table->string("instagram");
+            $table->string("asal");
         });
     }
 
@@ -35,7 +43,7 @@ class Vendor extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('vendor');
     }
 }
 

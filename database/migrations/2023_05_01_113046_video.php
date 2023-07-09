@@ -16,6 +16,7 @@ class Video extends Migration
         //
          Schema::create('video', function (Blueprint $table) {
             $table->id();
+            $table->string('judul');
             $table->integer('id_mapel');
             $table->string('video');
             $table->string('gambar');
@@ -34,6 +35,6 @@ class Video extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists("video");
     }
 }

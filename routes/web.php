@@ -18,9 +18,12 @@ use App\Http\Controllers\VendorController;
 */
 
 Route::get('/', [UserController::class, 'index']);
+Route::get('/profile', [UserController::class, 'profile'])->name("profiles");
 Route::get('/detail/{id}', [UserController::class, 'detail']);
 Route::get('/porto/{id}', [UserController::class, 'porto']);
-Route::get('/blog', [BlogController::class, 'index']);
+Route::get('/pelajaran', [BlogController::class, 'index'])->name("pelajaran.index");
+Route::get('/mata-pelajaran', [BlogController::class, 'getMapel'])->name("mapel.list");
+
 Route::get('/kategori/{id}', [UserController::class, 'kategori']);
 Route::get('/search', [UserController::class, 'search']);
 Route::get('/login', [UserController::class, 'login'])->name('login')->middleware('guest:user');
@@ -74,12 +77,12 @@ Route::get('/vendor/register', [VendorController::class, 'register'])->name('reg
 Route::post('/vendor/doRegister', [VendorController::class, 'doRegister'])->middleware('guest:vendor');
 Route::post('/vendor/doLogin', [VendorController::class, 'doLogin'])->middleware('guest:vendor');
 Route::get('/vendor/logout', [VendorController::class, 'logout']);
-Route::get('/vendor',[VendorController::class,'index']);
-Route::get('/vendor/detail',[VendorController::class,'detail']);
-Route::post('/vendor/ubahDetail',[VendorController::class,'ubahDetail']);
-Route::post('/vendor/uploadSlider',[VendorController::class,'uploadSlider']);
-Route::delete('/vendor/hapusSlider',[VendorController::class,'hapusSlider']);
+Route::get('/vendor', [VendorController::class, 'index']);
+Route::get('/vendor/detail', [VendorController::class, 'detail']);
+Route::post('/vendor/ubahDetail', [VendorController::class, 'ubahDetail']);
+Route::post('/vendor/uploadSlider', [VendorController::class, 'uploadSlider']);
+Route::delete('/vendor/hapusSlider', [VendorController::class, 'hapusSlider']);
 
 
-Route::get('/vendor/ubah-password',[VendorController::class,'ubahPassword']);
-Route::post('/vendor/doUbahPassword',[VendorController::class,'doUbahPassword']);
+Route::get('/vendor/ubah-password', [VendorController::class, 'ubahPassword']);
+Route::post('/vendor/doUbahPassword', [VendorController::class, 'doUbahPassword']);
