@@ -26,8 +26,10 @@ class BlogController extends Controller
 
     public function getMapel()
     {
+        $id = session('id_kelas');
+        $kelas = DB::table('kategori')->where(['id' => $id, 'hapus' => 0])->first();
         $mapel = DB::table('mapel')->get();
-        return view("matapelajaran-list", ["mapels" => $mapel]);
+        return view("matapelajaran-list", ["mapels" => $mapel, "kelas" => $kelas]);
     }
 
     public function getVideoByMapel(Request $request)

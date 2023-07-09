@@ -58,7 +58,7 @@ class UserController extends Controller
             $request->session()->put('user', true);
             $request->session()->put('user_name', Auth::guard('user')->user()->name); // set session 'user'
             $request->session()->put('id_kelas', Auth::guard('user')->user()->kelas); // set session 'id_kelas'
-            return redirect()->route("pelajaran.index")->withSuccess('success', 'You have successfully logged in');
+            return redirect()->route("mapel.list")->withSuccess('success', 'You have successfully logged in');
         }
         return redirect("login")->withError('Salah Email atau Password');
     }
