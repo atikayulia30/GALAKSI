@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -39,15 +40,13 @@ class UserController extends Controller
     {
         return view('login');
     }
-    function porto($id)
-    {
-        $kategori = DB::table('vendor')->where('id', $id)->first();
-        return view('porto');
-    }
+
     function detail($id)
     {
-        $vendor = DB::table('vendor')->where('id', $id)->first();
-        return view('detail', compact('vendor'));
+        $video = DB::table('video')->where(['id' => $id, 'hapus' => 0])->first();
+        $komentars = DB::table('komentar')->get();
+
+        return view('detail', ["komentars" => $komentars, "video" => $video]);
     }
 
 
@@ -85,6 +84,11 @@ class UserController extends Controller
     {
         $kategori['kategori'] = DB::table('kategori')->where(['hapus' => 0])->get();
         return view('register', $kategori);
+    }
+
+    public function downloadMateri(Request $request)
+    {
+        return Storage::download($request->file_path);
     }
 
     function doRegister(Request $request)

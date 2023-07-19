@@ -14,7 +14,7 @@ class Video extends Migration
     public function up()
     {
         //
-         Schema::create('video', function (Blueprint $table) {
+        Schema::create('video', function (Blueprint $table) {
             $table->id();
             $table->string('judul');
             $table->integer('id_mapel');

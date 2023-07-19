@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateMateriRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -194,7 +195,7 @@ class AdminController extends Controller
     }
 
 
-    function vendorInsert(Request $request)
+    function vendorInsert(CreateMateriRequest $request)
     {
         $judul = $request->judul;
         $deskripsi = $request->deskripsi;
@@ -226,9 +227,9 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'video' => 'required',
         ]);
-        //    if ($validator->fails()) {
-        //        return redirect('/admin/vendor')->with(['status' => 2 , 'msg' => 'Error Validasi Video']);
-        //    }
+        if ($validator->fails()) {
+            return redirect('/admin/vendor')->with(['status' => 2, 'msg' => 'Error Validasi Video']);
+        }
 
         // Upload file video
         $file = $request->file('video');
@@ -239,6 +240,12 @@ class AdminController extends Controller
         } else {
             return redirect('/admin/vendor')->with(['status' => 2, 'msg' => 'Error Upload File Video']);
         }
+        if ($request->hasFile("file_materi")) {
+            $materi_filepath = $request->file('file_materi')->storePublicly("materi");
+        }
+        if (!$materi_filepath) {
+            return \redirect('/admin/vendor')->with('error', "upload file pdf error");
+        }
 
         $insert = DB::table('video')->insert([
             'judul' => $judul,
@@ -247,16 +254,17 @@ class AdminController extends Controller
             'video' => $videoFilePath,
             'gambar' => $nama_file_gambar, // Simpan nama file gambar ke database
             'deskripsi' => $deskripsi,
+            'materi_path' => $materi_filepath,
             'hapus' => 0,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
-        if ($insert) {
-            return redirect('/admin/vendor')->with(['status' => 1, 'msg' => 'Berhasil Menambahkan Video']);
-        } else {
-            return redirect('/admin/vendor')->with(['status' => 2, 'msg' => 'Gagal Menambahkan Video']);
+        if (!$insert) {
+            return redirect('/admin/vendor')->with("error", "gagal upload");
         }
+
+        return redirect('/admin/vendor')->with('success', 'Berhasil Menambahkan Video');
     }
 
 
