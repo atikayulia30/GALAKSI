@@ -18,7 +18,7 @@
             @foreach ($video as $data)
             <div class="col-lg-4 col-md-6">
                 <div class="single-latest-blog">
-                    <img src="{{ asset('foto_vendor/'.$data->gambar) }}" alt="" />
+                    <img src="{{ asset('storage/'.$data->gambar) }}" alt="" />
 
                     {{-- <video width="320" height="240" poster="{{ asset('foto_vendor/'.$data->video) }}" controls>
                     <source src="{{ asset('foto_vendor/'.$data->video) }}" type="video/mp4">

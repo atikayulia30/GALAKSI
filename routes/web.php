@@ -55,7 +55,7 @@ Route::post('/admin/kategori/hapus', [AdminController::class, 'kategoriHapus']);
 Route::get('/admin/vendor', [AdminController::class, 'vendor'])->name('vendor');
 Route::post('/admin/vendor/tambah', [AdminController::class, 'vendorInsert'])->name("admin.materi.store");
 Route::get('/admin/vendor/detail/{id}', [AdminController::class, 'vendorDetail']);
-Route::post('/admin/vendor/edit', [AdminController::class, 'vendorEdit']);
+Route::put('/admin/vendor/edit/{id}', [AdminController::class, 'materiEdit'])->name("admin.vendor.edit");
 Route::post('/admin/vendor/hapus', [AdminController::class, 'vendorHapus']);
 
 Route::get('/admin/user', [AdminController::class, 'user']);

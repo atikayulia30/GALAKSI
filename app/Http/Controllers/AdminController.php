@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateMateriRequest;
+use App\Http\Requests\materi\CreateMateriRequest as MateriCreateMateriRequest;
+use App\Http\Requests\materi\UpdateMateriRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
-use App\Models\Vendor;
 
 class AdminController extends Controller
 {
+    private $videoFolder = "videos";
+    private $gambarFolder = "images";
+    private $materiFolder = "materi";
+
     function __construct()
     {
         $this->middleware('auth:admin')->except(['login', 'doLogin']);
@@ -195,54 +198,35 @@ class AdminController extends Controller
     }
 
 
-    function vendorInsert(CreateMateriRequest $request)
+    function vendorInsert(MateriCreateMateriRequest $request)
     {
         $judul = $request->judul;
         $deskripsi = $request->deskripsi;
         $deskripsi = Str::of($deskripsi)->stripTags();
-        $video = $request->video;
-        $gambar = $request->gambar;
         $id_kategori = $request->id_kelas;
         $id_mapel = $request->id_mapel;
 
-        // Validasi gambar
-        $gambar_validator = Validator::make($request->all(), [
-            'gambar' => 'image|mimes:jpeg,png,jpg|max:1048',
-        ]);
-        if ($gambar_validator->fails()) {
-            return redirect('/admin/vendor')->with(['status' => 2, 'msg' => 'Error Validasi Gambar']);
-        }
-
         // Upload file gambar
-        if ($gambar) {
+        if ($request->hasFile("gambar")) {
+            $gambar = $request->file("gambar");
             $file = $request->file('gambar');
-            $nama_file_gambar = time() . "_" . $gambar->getClientOriginalName();
-            $tujuan_upload_gambar = 'foto_vendor';
-            $gambar->move($tujuan_upload_gambar, $nama_file_gambar);
-        } else {
-            return redirect('/admin/vendor')->with(['status' => 2, 'msg' => 'Error Upload File Gambar']);
+            $gambarPath = $gambar->storePublicly($this->gambarFolder);
         }
-
-        // Validasi video
-        $validator = Validator::make($request->all(), [
-            'video' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return redirect('/admin/vendor')->with(['status' => 2, 'msg' => 'Error Validasi Video']);
+        if (!$gambarPath) {
+            return \redirect('/admin/vendor')->with("error", "error while upload gambar");
         }
 
         // Upload file video
         $file = $request->file('video');
-        $nama_file = time() . "_" . $file->getClientOriginalName();
-        $tujuan_upload = 'foto_vendor';
-        if ($stored = $file->storePubliclyAs($tujuan_upload, $nama_file)) {
+        if ($stored = $file->storePublicly($this->videoFolder)) {
             $videoFilePath = $stored;
         } else {
             return redirect('/admin/vendor')->with(['status' => 2, 'msg' => 'Error Upload File Video']);
         }
         if ($request->hasFile("file_materi")) {
-            $materi_filepath = $request->file('file_materi')->storePublicly("materi");
+            $materi_filepath = $request->file('file_materi')->storePublicly($this->materiFolder);
         }
+
         if (!$materi_filepath) {
             return \redirect('/admin/vendor')->with('error', "upload file pdf error");
         }
@@ -252,7 +236,7 @@ class AdminController extends Controller
             'id_kategori' => $id_kategori,
             'id_mapel' => $id_mapel,
             'video' => $videoFilePath,
-            'gambar' => $nama_file_gambar, // Simpan nama file gambar ke database
+            'gambar' => $gambarPath, // Simpan nama file gambar ke database
             'deskripsi' => $deskripsi,
             'materi_path' => $materi_filepath,
             'hapus' => 0,
@@ -270,47 +254,43 @@ class AdminController extends Controller
 
     function vendorDetail($id)
     {
-
         $data = DB::table('video')->where(['id' => $id])->first();
         echo json_encode($data);
     }
-    function vendorEdit(Request $request)
+
+    public function materiEdit(UpdateMateriRequest $request, $id)
     {
-        try {
-            $id = $request->id;
-            $data_update = [
-                'judul' => $request->judul,
-                'id_mapel' => $request->id_mapel,
-                'id_kategori' => $request->id_kategori,
-                'deskripsi' => Str::of($request->deskripsi)->stripTags(),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ];
+        $data = $request->validated();
+        $data['updated_at'] = date('Y-m-d H:i:s');
 
-            if ($request->hasFile('video')) {
-                $request->validate([
-                    'video' => 'required|mimes:mp4,avi,wmv,mov|max:102400',
-                ]);
+        if ($request->hasFile('video')) {
+            $file = $request->file('video');
 
-                $file = $request->file('video');
-                $nama_file = time() . "_" . $file->getClientOriginalName();
-                $tujuan_upload = 'foto_vendor';
-
-                if ($file->move($tujuan_upload, $nama_file)) {
-                    $data_update['video'] = $nama_file;
-                }
-                //end upload file
+            if ($path = $file->storePublicly($this->videoFolder)) {
+                $data['video'] = $path;
             }
-
-            $update = DB::table('video')->where(['id' => $id])->update($data_update);
-
-            if ($update) {
-                return redirect('/admin/vendor')->with(['status' => 1, 'msg' => 'Berhasil Mengubah Video']);
-            } else {
-                throw new \Exception('Gagal mengubah data.');
-            }
-        } catch (\Exception $e) {
-            return redirect('/admin/vendor')->with(['status' => 2, 'msg' => $e->getMessage()]);
         }
+        if ($request->hasFile("file_materi")) {
+            $materiPath = $request->file("file_materi")->storePublicly($this->materiFolder);
+            if (!$materiPath) {
+                $data['materi_path'] = $materiPath;
+            }
+        }
+
+        if ($request->hasFile("gambar")) {
+            $gambarPath = $request->file("gambar")->storePublicly($this->gambarFolder);
+            if (!$gambarPath) {
+                $data['gambar'] = $materiPath;
+            }
+        }
+
+        $update = DB::table('video')->where(['id' => $id])->update($data);
+
+        if (!$update) {
+            return redirect('/admin/vendor')->with("error", "update failed.");
+        }
+
+        return redirect('/admin/vendor')->with('success', 'Berhasil Mengubah Video');
     }
 
     function vendorHapus(Request $request)
@@ -327,31 +307,12 @@ class AdminController extends Controller
         }
     }
 
-    function pesanan()
-    {
-        $pesanan = DB::table('pesanan')->select(
-            'pesanan.*',
-            'vendor.nama_vendor',
-            'users.name'
-        )->join(
-            'vendor',
-            'vendor.id',
-            '=',
-            'pesanan.id_vendor'
-        )->join(
-            'users',
-            'users.id',
-            '=',
-            'pesanan.id_user'
-        )->get();
-        return view('admin.menu.pesanan', ['pesanan' => $pesanan]);
-    }
-
     function profile()
     {
         $data['user'] = DB::table('admin')->first();
         return view('admin.menu.user_profile', $data);
     }
+
     function profileEdit(Request $request)
     {
         $data_update = [
