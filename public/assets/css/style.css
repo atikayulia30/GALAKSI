@@ -91,7 +91,9 @@ ol {
 /*---------------------
   Helper CSS
 -----------------------*/
-
+.bg-birulaut{
+    background-color: #e7ecf8;
+}
 .section-title {
     margin-bottom: 40px;
     text-align: center;
