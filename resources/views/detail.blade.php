@@ -1,13 +1,5 @@
 @extends('layout')
 
-@php
-
-$id = request()->segment(count(request()->segments()));
-$video = DB::table('video')->where(['id' => $id, 'hapus' => 0])->first();
-$komentars = DB::table('komentar')->get();
-
-@endphp
-
 @section('content')
 <div class="site-section" data-aos="fade">
   <div class="container-fluid">
@@ -33,6 +25,10 @@ $komentars = DB::table('komentar')->get();
       <div class="col-md-4">
         <p>{{strip_tags($video->deskripsi)}}</p>
       </div>
+    </div>
+    <div>
+      <a href="{{ route("download_materi", ['file_path' => $video->materi_path]) }}" class="btn btn-warning">Unduh
+        PDF</a>
     </div>
     <div class="card mt-4">
       <div class="card-body">

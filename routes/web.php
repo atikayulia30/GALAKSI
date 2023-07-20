@@ -20,7 +20,7 @@ use App\Http\Controllers\VendorController;
 Route::get('/', [UserController::class, 'index']);
 Route::get('/profile', [UserController::class, 'profile'])->name("profiles");
 Route::get('/detail/{id}', [UserController::class, 'detail']);
-Route::get('/porto/{id}', [UserController::class, 'porto']);
+Route::get('/download_pdf', [UserController::class, 'downloadMateri'])->name("download_materi");
 Route::get('/pelajaran', [BlogController::class, 'index'])->name("pelajaran.index");
 Route::get('/mata-pelajaran', [BlogController::class, 'getMapel'])->name("mapel.list");
 
@@ -53,9 +53,9 @@ Route::post('/admin/kategori/edit', [AdminController::class, 'kategoriEdit']);
 Route::post('/admin/kategori/hapus', [AdminController::class, 'kategoriHapus']);
 
 Route::get('/admin/vendor', [AdminController::class, 'vendor'])->name('vendor');
-Route::post('/admin/vendor/tambah', [AdminController::class, 'vendorInsert']);
+Route::post('/admin/vendor/tambah', [AdminController::class, 'vendorInsert'])->name("admin.materi.store");
 Route::get('/admin/vendor/detail/{id}', [AdminController::class, 'vendorDetail']);
-Route::post('/admin/vendor/edit', [AdminController::class, 'vendorEdit']);
+Route::put('/admin/vendor/edit/{id}', [AdminController::class, 'materiEdit'])->name("admin.vendor.edit");
 Route::post('/admin/vendor/hapus', [AdminController::class, 'vendorHapus']);
 
 Route::get('/admin/user', [AdminController::class, 'user']);
@@ -86,7 +86,3 @@ Route::delete('/vendor/hapusSlider', [VendorController::class, 'hapusSlider']);
 
 Route::get('/vendor/ubah-password', [VendorController::class, 'ubahPassword']);
 Route::post('/vendor/doUbahPassword', [VendorController::class, 'doUbahPassword']);
-
-Route::get("linkstorage", function(){
-    Artisan::call("storage:link");
-});
