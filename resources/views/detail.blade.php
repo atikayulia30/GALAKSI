@@ -27,8 +27,8 @@
       </div>
     </div>
     <div>
-      <a href="{{ route("download_materi", ['file_path' => $video->materi_path]) }}" class="btn btn-warning">Unduh
-        PDF</a>
+      <a href="{{ route("download_materi", ['file_path' => $video->materi_path]) }}" class="btn btn-warning">Latian
+        soal</a>
     </div>
     <div class="card mt-4">
       <div class="card-body">

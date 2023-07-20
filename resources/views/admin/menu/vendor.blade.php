@@ -1,7 +1,6 @@
 @extends('admin.layout')
 
 @section('content')
-
 <div class="app-content">
     <div class="content-wrapper">
         <div class="container">
@@ -72,7 +71,7 @@
                 <h5 class="modal-title" id="tambahVendorLabel">Tambah</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route("admin.materi.store") }}" method="post" enctype="multipart/form-data">
+            <form action="{{ route("admin.materi.store") }}" method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
                     @csrf
                     @method("POST")

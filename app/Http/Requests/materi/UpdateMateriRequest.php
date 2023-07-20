@@ -30,6 +30,7 @@ class UpdateMateriRequest extends FormRequest
             "gambar" =>  ['image', 'mimes:jpeg,png,jpg', 'max:1048'],
             'video' => ['mimes:mp4,mkv'],
             'file_materi' => ['mimes:pdf', 'max:30000'],
+            'deskripsi' => ['string'],
         ];
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
@@ -211,9 +212,9 @@ class AdminController extends Controller
             $gambar = $request->file("gambar");
             $file = $request->file('gambar');
             $gambarPath = $gambar->storePublicly($this->gambarFolder);
-        }
-        if (!$gambarPath) {
-            return \redirect('/admin/vendor')->with("error", "error while upload gambar");
+            if (!$gambarPath) {
+                return redirect('/admin/vendor')->with(["status" => 2, "msg" =>  "upload gambar error"]);
+            }
         }
 
         // Upload file video
@@ -221,14 +222,14 @@ class AdminController extends Controller
         if ($stored = $file->storePublicly($this->videoFolder)) {
             $videoFilePath = $stored;
         } else {
-            return redirect('/admin/vendor')->with(['status' => 2, 'msg' => 'Error Upload File Video']);
+            return redirect('/admin/vendor')->with(["status" => 2, "msg" =>  "upload video error"]);
         }
         if ($request->hasFile("file_materi")) {
             $materi_filepath = $request->file('file_materi')->storePublicly($this->materiFolder);
         }
 
         if (!$materi_filepath) {
-            return \redirect('/admin/vendor')->with('error', "upload file pdf error");
+            return redirect('/admin/vendor')->with(["status" => 2, "msg" =>  "upload file pdf error"]);
         }
 
         $insert = DB::table('video')->insert([
@@ -245,10 +246,10 @@ class AdminController extends Controller
         ]);
 
         if (!$insert) {
-            return redirect('/admin/vendor')->with("error", "gagal upload");
+            return redirect('/admin/vendor')->with(["status" => 2, "msg" => "gagal upload"]);
         }
 
-        return redirect('/admin/vendor')->with('success', 'Berhasil Menambahkan Video');
+        return redirect('/admin/vendor')->with(['status' => 1, "msg" => 'Berhasil Menambahkan Video']);
     }
 
 
@@ -273,21 +274,23 @@ class AdminController extends Controller
         if ($request->hasFile("file_materi")) {
             $materiPath = $request->file("file_materi")->storePublicly($this->materiFolder);
             if (!$materiPath) {
-                $data['materi_path'] = $materiPath;
+                return redirect('/admin/vendor')->with(["status" => 2, "msg" =>  "updated failed"]);
             }
+            $data['materi_path'] = $materiPath;
         }
 
         if ($request->hasFile("gambar")) {
             $gambarPath = $request->file("gambar")->storePublicly($this->gambarFolder);
             if (!$gambarPath) {
-                $data['gambar'] = $materiPath;
+                return redirect('/admin/vendor')->with(["status" => 2, "msg" =>  "updated failed"]);
             }
+            $data['gambar'] = $materiPath;
         }
 
         $update = DB::table('video')->where(['id' => $id])->update($data);
 
         if (!$update) {
-            return redirect('/admin/vendor')->with("error", "update failed.");
+            return redirect('/admin/vendor')->with(["status" => 2, "msg" =>  "updated failed"]);
         }
 
         return redirect('/admin/vendor')->with('success', 'Berhasil Mengubah Video');

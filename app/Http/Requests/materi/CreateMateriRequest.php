@@ -24,9 +24,13 @@ class CreateMateriRequest extends FormRequest
     public function rules()
     {
         return [
-            "gambar" =>  'required|image|mimes:jpeg,png,jpg|max:1048',
+            "judul" => ['required', "string"],
+            "id_mapel" => ['required', "numeric", "exists:mapel,id"],
+            "id_kelas" => ['required', "numeric"],
+            "gambar" =>  'required|image|mimes:jpeg,png,jpg|max:2048',
             'video' => ['required', 'mimes:mp4,mkv'],
             'file_materi' => ['mimes:pdf', 'max:30000'],
+            'deskripsi' => ["required", 'string']
         ];
     }
 }
